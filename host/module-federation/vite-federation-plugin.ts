@@ -41,6 +41,11 @@ function serveFromDist(dist: string): Connect.NextHandleFunction {
       res.setHeader('Access-Control-Allow-Origin', '*');
       res.setHeader('Content-Type', mime.lookup(req.url));
       
+      // Rewrite shared paths
+      /*
+ origin: 'http://127.0.0.1:5173',
+  'sec-fetch-site': 'cross-site',
+      */
       res.write(fs.readFileSync(file, "utf-8"));
       res.end();
       return;

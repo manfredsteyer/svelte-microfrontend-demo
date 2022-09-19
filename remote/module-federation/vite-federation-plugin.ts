@@ -30,6 +30,7 @@ export async function federation(params: BuildHelperParams) {
 
 function serveFromDist(dist: string): Connect.NextHandleFunction {
   return (req, res, next) => {
+
     if (!req.url || req.url.endsWith("/index.html")) {
       next();
       return;
