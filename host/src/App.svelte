@@ -8,6 +8,13 @@
 		new app.default({ target: remoteAppTarget });
 	})();
 
+	let remoteAppTarget2;
+	(async () => {
+		const app = await loadRemoteModule('remote', './remote-counter');
+		new app.default({ target: remoteAppTarget2 });
+	})();
+
+
 	of('emit')
 		.pipe(tap(() => console.log("I'm RxJs from host")))
 		.subscribe();
@@ -38,6 +45,7 @@
 </div>
 
 <div bind:this={remoteAppTarget} />
+<div bind:this={remoteAppTarget2} />
 
 <style>
 	.host .card {
