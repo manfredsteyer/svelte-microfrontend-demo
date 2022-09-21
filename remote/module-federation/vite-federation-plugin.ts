@@ -50,7 +50,7 @@ function serveFromDist(dist: string): Connect.NextHandleFunction {
       res.setHeader('Content-Type', mime.lookup(req.url));
       
       const content = fs.readFileSync(file, "utf-8");
-      const modified = enhanceFile(file, content);
+      const modified = enhanceFile(dist, file, content);
 
       res.write(modified);
       res.end();
@@ -61,51 +61,22 @@ function serveFromDist(dist: string): Connect.NextHandleFunction {
   };
 }
 
-function enhanceFile(fileName: string, src: string): string {
-  if (fileName.endsWith('remoteEntry.json')) {
-    return `
-    {
-      "name": "remote",
-      "shared": [
-        {
-          "packageName": "rxjs",
-          "outFileName": "rxjs-7_5_6-3beec0fe6449b1ff30137e7b06bf58ee.js",
-          "requiredVersion": "^7.5.6",
-          "singleton": true,
-          "strictVersion": true,
-          "version": "7.5.6",
-          "debug": {
-            "entryPoint": "node_modules/rxjs/dist/esm5/index.js"
-          }
-        },
-        {
-          "packageName": "shared",
-          "outFileName": "shared-94190ba142405e9a2531d8deea30176c.js",
-          "requiredVersion": "",
-          "singleton": true,
-          "strictVersion": false,
-          "version": "",
-          "debug": {
-            "entryPoint": "../shared/shared.ts"
-          }
-        }
-      ],
-      "exposes": [
-        {
-          "key": "./remote-app",
-          "--outFileName": "src/App.svelte",
-          "outFileName": "@fs/c:/temp/svelte-microfrontend-demo/remote/src/App.svelte",
-
-          "debug": {
-            "localPath": "c:/temp/svelte-microfrontend-demo/remote/src/App.svelte"
-          }
-        }
-      ]
-    }    
-    `;
-  }
-
-  return src;
+function enhanceFile(dist: string, fileName: string, src: string): string {
+	if (fileName.endsWith('remoteEntry.json')) {
+		let remoteEntry = JSON.parse(fs.readFileSync(fileName, 'utf-8'));
+    // we can use this or pass dist into method params
+    // const dist = path.dirname(fileName);
+		remoteEntry = {
+      ...remoteEntry,
+      shared: (remoteEntry.shared || []).map((el) => 
+        ({ ...el, outFileName: `@fs${dist}/${el.outFileName}` })),
+      exposes: (remoteEntry.exposes || []).map((el) => 
+        ({ ...el, outFileName: `@fs${dist}/${el.outFileName}` })),
+    };
+		return JSON.stringify(remoteEntry);
+	}
+  console.log('fileNames',fileName)
+	return src;
 }
 
 

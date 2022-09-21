@@ -4,7 +4,7 @@ import { federation } from './module-federation/vite-federation-plugin';
 import { esBuildAdapter } from './module-federation/esbuild-adapter';
 import tsconfigPaths from 'vite-tsconfig-paths'
 
-export default defineConfig(async () => ({
+export default defineConfig(async ({command}) => ({
 	server: {
 		fs: {
 			// IMPORTANT: Make sure to allow access to all shared libs
@@ -27,7 +27,7 @@ export default defineConfig(async () => ({
 				tsConfig: 'tsconfig.json',
 				federationConfig: 'module-federation/federation.config.cjs',
 				verbose: false,
-				debug: true
+				debug: command === 'serve'
 			},
 			adapter: esBuildAdapter,
 		}),
