@@ -13,27 +13,31 @@ export async function federation(params: BuildHelperParams) {
     name: "init-federation", // required, will show up in warnings and errors
     async options(o: unknown) {
       await federationBuilder.init(params);
-      // console.log('fconf', federationBuilder.config);
       o["external"] = federationBuilder.externals;
     },
-    // async config(config, env) {
-    //   console.log('config', config);
-    //   console.log('env', env);
-    // },
     async closeBundle() {
       await federationBuilder.build();
-      transformIndexHtml(params);
     },
     async configureServer(server: ViteDevServer) {
-      await federationBuilder.build();
-
-      const op = params.options;
-      const dist = path.join(op.workspaceRoot, op.outputPath);
-      server.middlewares.use(serveFromDist(dist));
+      await configureDevServer(server, params);
+    },
+    transformIndexHtml(html: string) {
+      return html.replace(/type="module"/g, 'type="module-shim"');
     },
     ...devExternalsMixin
+  }
+}
 
-  };
+async function configureDevServer(server: ViteDevServer, params: BuildHelperParams) {
+  await federationBuilder.build({
+    skipExposed: true,
+    skipMappings: true
+  });
+
+  const op = params.options;
+  const dist = path.join(op.workspaceRoot, op.outputPath);
+  server.middlewares.use(serveFromDist(dist));
+
 }
 
 function serveFromDist(dist: string): Connect.NextHandleFunction {
@@ -69,27 +73,18 @@ function enhanceFile(dist: string, fileName: string, src: string): string {
 		remoteEntry = {
       ...remoteEntry,
       shared: (remoteEntry.shared || []).map((el) => 
-        ({ ...el, outFileName: `@fs${dist}/${path.basename(el.outFileName)}` })),
+        ({ ...el, outFileName: el.dev?.entryPoint.includes('/node_modules/') ? el.outFileName : normalize(path.join('@fs', el.dev?.entryPoint || '')) })),
       // load from node_modules --> ({ ...el, outFileName: `@fs${el.debug?.entryPoint}` })),
       // if we load files from node_modules, commonjs pkg are not "parsed" by esbuildCommonjs plugin
       exposes: (remoteEntry.exposes || []).map((el) => 
-        ({ ...el, outFileName: `@fs${el.debug?.localPath}` })),
+        ({ ...el, outFileName: normalize(path.join('@fs', el.dev?.entryPoint || '')) })),
     };
     // console.log('fileNames',remoteEntry)
-		return JSON.stringify(remoteEntry);
+		return JSON.stringify(remoteEntry, null, 2);
 	}
 	return src;
 }
 
-
-function transformIndexHtml(params: BuildHelperParams): void {
-  const filePath = path.join(
-    params.options.workspaceRoot,
-    params.options.outputPath,
-    "index.html"
-  );
-
-  const html = fs.readFileSync(filePath, "utf-8");
-  const modified = html.replace(/type="module"/g, 'type="module-shim"');
-  fs.writeFileSync(filePath, modified);
+function normalize(path: string): string {
+  return path.replace(/\\/g, '/');
 }

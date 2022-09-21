@@ -1,12 +1,22 @@
 import { defineConfig } from 'vite';
 import { svelte } from '@sveltejs/vite-plugin-svelte';
 import { federation } from './module-federation/vite-federation-plugin';
-import { esBuildAdapter } from './module-federation/esbuild-adapter';
-import tsconfigPaths from 'vite-tsconfig-paths'
+// import { esBuildAdapter } from './module-federation/esbuild-adapter';
+import { createEsBuildAdapter } from '@softarc/native-federation-esbuild';
+import { sveltePlugin } from './module-federation/esbuild-svelte-plugin';
+
 
 export default defineConfig(async ({command}) => ({
+	server: {
+		fs: {
+			allow: [
+				'.',
+				'../shared'
+			]
+		}
+	},
 	plugins: [
-		tsconfigPaths(),
+		// tsconfigPaths(),
 		federation({
 			options: {
 				workspaceRoot: __dirname,
@@ -14,9 +24,11 @@ export default defineConfig(async ({command}) => ({
 				tsConfig: 'tsconfig.json',
 				federationConfig: 'module-federation/federation.config.cjs',
 				verbose: false,
-				debug: command === 'serve'
+				dev: command === 'serve'
 			},
-			adapter: esBuildAdapter,
+			adapter: createEsBuildAdapter({ 
+				plugins: [sveltePlugin]
+			}),
 		}),
 		svelte(), 
 	],

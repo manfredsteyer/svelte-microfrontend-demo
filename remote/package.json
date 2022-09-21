@@ -10,8 +10,9 @@
 		"check": "svelte-check --tsconfig ./tsconfig.json"
 	},
 	"devDependencies": {
-		"@softarc/native-federation": "^1.0.0-beta.1",
-		"@softarc/native-federation-runtime": "^1.0.0-beta.1",
+		"@softarc/native-federation": "^1.0.0-beta.2",
+		"@softarc/native-federation-runtime": "^1.0.0-beta.2",
+		"@softarc/native-federation-esbuild": "^1.0.0-beta.2",
 		"@sveltejs/vite-plugin-svelte": "^1.0.2",
 		"@tsconfig/svelte": "^3.0.0",
 		"esbuild": "^0.15.7",
@@ -25,7 +26,6 @@
 		"vite-tsconfig-paths": "^3.5.0"
 	},
 	"dependencies": {
-		"@softarc/native-federation-esbuild": "^1.0.0-beta.1",
 		"colormap": "^2.3.2",
 		"rxjs": "^7.5.6"
 	}

@@ -1,3 +1,5 @@
+import { EMPTY } from './const';
+
 export const state = {
-    message: '<no message>'
+    message: EMPTY
 }
