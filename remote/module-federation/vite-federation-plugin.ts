@@ -69,13 +69,13 @@ function enhanceFile(dist: string, fileName: string, src: string): string {
 		remoteEntry = {
       ...remoteEntry,
       shared: (remoteEntry.shared || []).map((el) => 
-        ({ ...el, outFileName: `@fs${dist}/${el.outFileName}` })),
+        ({ ...el, outFileName: `@fs${dist}/${path.basename(el.outFileName)}` })),
       exposes: (remoteEntry.exposes || []).map((el) => 
-        ({ ...el, outFileName: `@fs${dist}/${el.outFileName}` })),
+        ({ ...el, outFileName: `@fs${dist}/${path.basename(el.outFileName)}` })),
     };
+    // console.log('fileNames',remoteEntry)
 		return JSON.stringify(remoteEntry);
 	}
-  console.log('fileNames',fileName)
 	return src;
 }
 
