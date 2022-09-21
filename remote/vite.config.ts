@@ -3,6 +3,7 @@ import { svelte } from '@sveltejs/vite-plugin-svelte';
 import { federation } from './module-federation/vite-federation-plugin';
 import { esBuildAdapter } from './module-federation/esbuild-adapter';
 import tsconfigPaths from 'vite-tsconfig-paths'
+import { esbuildCommonjs } from '@originjs/vite-plugin-commonjs'
 
 export default defineConfig(async ({command}) => ({
 	server: {
@@ -18,6 +19,7 @@ export default defineConfig(async ({command}) => ({
 		}
 	},
 	plugins: [
+		esbuildCommonjs(['colormap']),
 		// IMPORTANT: Don't use this plugin!
 		// tsconfigPaths(),
 		federation({

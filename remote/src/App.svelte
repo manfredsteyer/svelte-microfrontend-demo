@@ -3,10 +3,22 @@
 
 	import { state } from 'shared';
 	console.log('remote got message:', state.message);
+	
+	// colormap is a commonjs pkg
+	// let colormap = require('colormap')
+	import colormap from 'colormap';
 
 	of('emit')
 		.pipe(tap(() => console.log("I'm RxJs from remote")))
 		.subscribe();
+
+	let colors = colormap({
+		colormap: 'jet',
+		nshades: 10,
+		format: 'hex',
+		alpha: 1,
+	});
+	console.log('colors', colors);
 </script>
 
 <div class="card">
