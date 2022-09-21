@@ -70,10 +70,12 @@ function enhanceFile(dist: string, fileName: string, src: string): string {
       ...remoteEntry,
       shared: (remoteEntry.shared || []).map((el) => 
         ({ ...el, outFileName: `@fs${dist}/${path.basename(el.outFileName)}` })),
+      // load from node_modules --> ({ ...el, outFileName: `@fs${el.debug?.entryPoint}` })),
+      // if we load files from node_modules, commonjs pkg are not "parsed" by esbuildCommonjs plugin
       exposes: (remoteEntry.exposes || []).map((el) => 
-        ({ ...el, outFileName: `@fs${dist}/${path.basename(el.outFileName)}` })),
+        ({ ...el, outFileName: `@fs${el.debug?.localPath}` })),
     };
-    // console.log('fileNames',remoteEntry)
+    console.log('fileNames',remoteEntry)
 		return JSON.stringify(remoteEntry);
 	}
 	return src;
