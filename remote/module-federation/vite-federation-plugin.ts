@@ -75,7 +75,7 @@ function enhanceFile(dist: string, fileName: string, src: string): string {
       exposes: (remoteEntry.exposes || []).map((el) => 
         ({ ...el, outFileName: `@fs${el.debug?.localPath}` })),
     };
-    console.log('fileNames',remoteEntry)
+    // console.log('fileNames',remoteEntry)
 		return JSON.stringify(remoteEntry);
 	}
 	return src;
